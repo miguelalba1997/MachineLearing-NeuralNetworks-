@@ -154,19 +154,18 @@ class Neuron():
         return (np.exp(-1 * x))/(1 + np.exp(-1 * x))**2
 
 nn = NeuralNetwork(2 ,3, 1, 2, input_list = [1,1], expected = [1,0])
-"""
 print("input list:", nn.input_list, "\n")
 print("wieght list:\n", len(nn.wieghts[0]),len(nn.wieghts[0][0]), "\n")
 print("neuron list:",nn.neurons, "\n")
-"""
+
 for i in range(0, 300):
     nn.train()
     
     print(i, nn.error)
-    """
+    
     print("output:",nn.outputlist,"\n")
     print("hidden error list:", nn.hidden_error, "\n")
     print("delta input to hidden:\n",nn.delta_w_ih)
     print("delta hidden to hidden:\n",nn.delta_w_hh)       
     print("delta hidden to output:\n",nn.delta_w_ho)
-    """
+    
