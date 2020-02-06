@@ -44,11 +44,17 @@ class NeuralNetwork():
         self.error = np.array(self.error)
         
         #backpropogate our error
-        for j in range(len(self.wieghts) - 1, 0, -1):           
+        for j in range(len(self.wieghts) - 1, 0, -1):
             if j == (len(self.wieghts) - 1):              
+                print("Wieghts at J: ", self.wieghts[j])
+                print("Error:", self.error)
+                print(j)
                 self.hidden_error.append(np.dot(self.error, self.wieghts[j].T))
             else:
-                self.hidden_error.append(np.dot(self.wieghts[j].T, self.hidden_error[j-1]))
+                self.hidden_error.append(np.dot(self.hidden_error[j-2], self.wieghts[j].T))
+                print("Wieghts at J: ", self.wieghts[j])
+                print("Hidden Error at J-2:", self.hidden_error[j-2])
+                print(j)
         
         #this is the input that goes into our sigmoid activation function
         input_w_ih = np.dot(self.input_list, self.wieghts[0])
@@ -61,7 +67,8 @@ class NeuralNetwork():
         input_w_ho = np.dot(self.neurons[len(self.neurons)-1], self.wieghts[1])
 
         #get the changes we'll need to our wieght tensor
-        self.delta_w_ih = (self.learning_rate * np.outer(np.reshape(self.input_list, (2,1)),                                                                                    (self.hidden_error[0] * Neuron.sigmoid_derivative(self, input_w_ih))))
+        self.delta_w_ih = (self.learning_rate * np.outer(np.reshape(self.input_list, (len(self.input_list),1)),
+                        (self.hidden_error[0] * Neuron.sigmoid_derivative(self, input_w_ih))))
         
         self.delta_w_hh = []
         for l in range(len(input_w_hh)):
@@ -108,6 +115,7 @@ class NeuronLayer():
                     for k in range(num_nodes):
                         self.wieghtlist[i][j].append(random.random())
                     self.wieghtlist[i][j] = np.array(self.wieghtlist[i][j])
+                #print(self.wieghtlist)
             elif i == layers:
                 for j in range(num_nodes):
                     self.wieghtlist[i].append([])
@@ -121,7 +129,8 @@ class NeuronLayer():
                         self.wieghtlist[i][j].append(random.random())
                     self.wieghtlist[i][j] = np.array(self.wieghtlist[i][j])
             self.wieghtlist[i] = np.array(self.wieghtlist[i])
-        self.wieghtlist = np.array(self.wieghtlist)
+        #print(self.wieghtlist)
+        #self.wieghtlist = np.array(self.wieghtlist)
         return self.wieghtlist
 
     def create_neuron(self, layers, num_nodes, input_list):
@@ -153,19 +162,21 @@ class Neuron():
     def sigmoid_derivative(self, x):
         return (np.exp(-1 * x))/(1 + np.exp(-1 * x))**2
 
-nn = NeuralNetwork(2 ,3, 1, 2, input_list = [1,1], expected = [1,0])
+nn = NeuralNetwork(3, 3, 3, 3, input_list = [1,1,1], expected = [1,0,1])
 print("input list:", nn.input_list, "\n")
 print("wieght list:\n", len(nn.wieghts[0]),len(nn.wieghts[0][0]), "\n")
 print("neuron list:",nn.neurons, "\n")
 
-for i in range(0, 300):
+for i in range(0, 1):
     nn.train()
     
     print(i, nn.error)
-    
+    """ 
     print("output:",nn.outputlist,"\n")
     print("hidden error list:", nn.hidden_error, "\n")
     print("delta input to hidden:\n",nn.delta_w_ih)
     print("delta hidden to hidden:\n",nn.delta_w_hh)       
     print("delta hidden to output:\n",nn.delta_w_ho)
-    
+    """
+#issues: cant do multiple layers
+#        cant do variable number of nodes  
